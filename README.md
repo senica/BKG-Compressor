@@ -46,21 +46,22 @@ Package Format (if you want to build your own uncompressor)
 A pointer should be used and moved the number of bytes you have read from as you process the compressed data.
 A Content variable should be created that you can add to while searching and replacing data and running through the series of compression passes.
 
-1. Type						2 bytes 0a00 = File; 0a01 = Directory
-2. Length of Filename		2 bytes
-3. Filename					Variable length specified by Length of Filename
-4. If type is 0a01, create the directory with Filename. Return to step 1. Otherwise, if type is 0a00, continue to get file content
-5. Content Size				4 bytes
-6. Content					Variable length specified by Content Size
-7. Number of Dictionaries	1 byte
-8. Dictionary Length		2 bytes
-9. Dictionary Content		Variable Length specified by Dictionary Length
-10. At this point the Dictionary Content should be broken up into 3 byte sections.  The 1st byte is the byte that is in the Content, the 2nd byte is the byte that should replace it. Convert from Bit value to Ascii. Do a search and replace for all occurences of the 1st byte with the second byte. Hold the Content.
-11. If the Number of Dictionaries is greater than 1, return to step 8.
-12. Write the file with Filename
-13. Return to step 1.
+1. Checksum					4 bytes Checksum is the last 4 bytes of the package. Checksum is the package size in bytes minus 4 bytes. Remove the checksum before processing with pointer.
+2. Type						2 bytes 0a00 = File; 0a01 = Directory
+3. Length of Filename		2 bytes
+4. Filename					Variable length specified by Length of Filename
+5. If type is 0a01, create the directory with Filename. Return to step 2. Otherwise, if type is 0a00, continue to get file content
+6. Content Size				4 bytes
+7. Content					Variable length specified by Content Size
+8. Number of Dictionaries	1 byte
+9. Dictionary Length		2 bytes
+10. Dictionary Content		Variable Length specified by Dictionary Length
+11. At this point the Dictionary Content should be broken up into 3 byte sections.  The 1st byte is the byte that is in the Content, the 2nd byte is the byte that should replace it. Convert from Bit value to Ascii. Do a search and replace for all occurences of the 1st byte with the second byte. Hold the Content.
+12. If the Number of Dictionaries is greater than 1, return to step 9.
+13. Write the file with Filename
+14. Return to step 2.
 
-Continue to run through the data until your pointer reaches the end of the file.
+Continue to run through the data until your pointer reaches the end of the file. (steps 2 - 14). Don't forget to remove the checksum from the end!
 
 License & Credits
 -----------------
