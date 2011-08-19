@@ -45,6 +45,7 @@ Package Format (if you want to build your own uncompressor)
 
 A pointer should be used and moved the number of bytes you have read from as you process the compressed data.
 A Content variable should be created that you can add to while searching and replacing data and running through the series of compression passes.
+
 1. Type						2 bytes 0a00 = File; 0a01 = Directory
 2. Length of Filename		2 bytes
 3. Filename					Variable length specified by Length of Filename
