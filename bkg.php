@@ -141,8 +141,8 @@ class BKG{
 				unset($hold_table[$v]);
 				$r = $this->table_insert($v); //Insert into table and get replacement value				
 				if($r === false){ $run = false; break; }else{
-					$pack = pack("H*", $r);
-					$value = pack("H*", $v);
+					$pack = pack("H*", str_pad($r, 2, 0, STR_PAD_LEFT));
+					$value = pack("H*", str_pad($v, 4, 0, STR_PAD_LEFT));
 					$this->content = str_replace($value, $pack, $this->content); //Do byte swapping
 				}
 			}
@@ -200,8 +200,9 @@ class BKG{
 			$this->traverse($file, '.');
 		}else if(is_file($file)){
 			$this->content = file_get_contents($file);
-			file_put_contents($this->output, pack("H*", "0A00").pack("H*", sprintf("%04X", strlen($file))).$file, FILE_APPEND);
+			file_put_contents($this->output, pack("H*", "0A00").pack("H*", sprintf("%04X", strlen(basename($file)))).basename($file), FILE_APPEND);
 			$this->shrink();
+			$this->write_zip();
 		}
 		//Add checksum
 		file_put_contents($this->output, pack("H*", sprintf("%08X", filesize($this->output))), FILE_APPEND);
@@ -220,8 +221,8 @@ class BKG{
 			$thold = '';
 			foreach($table as $k=>$v){
 				$table = array_reverse($table); //Maybe?
-				$thold .= pack("H*", $k);	//1byte Replaced value //May need to pad these str_pad($value, 4, "0", STR_PAD_LEFT);
-				$thold .= pack("H*", $v);	//2bytes Original Value May need to be padded
+				$thold .= pack("H*", str_pad($k, 2, 0, STR_PAD_LEFT));	//1byte Replaced value //May need to pad these str_pad($value, 4, "0", STR_PAD_LEFT);
+				$thold .= pack("H*", str_pad($v, 4, 0, STR_PAD_LEFT));	//2bytes Original Value May need to be padded
 			}
 			$hold .= pack("H*", sprintf("%04X", strlen($thold))); //2 Byte length of dictionary
 			$hold .= $thold; //Add the dictionary
@@ -300,6 +301,6 @@ class BKG{
 }
 
 $c = new BKG();
-//$c->compress("C:/Projects/Booger/", "booger.pkg", ".git, *_notes");
+//$c->compress("C:/Projects/Booger/index.php", "booger.pkg", ".git, *_notes");
 //$c->inflate("booger.pkg");
 ?>
