@@ -263,7 +263,7 @@ class BKG{
 		echo "Actual Filesize: ".$realsize." bytes\r\n";
 		if($realsize != $checksum){ echo "Malformed Package.  Exited\r\n"; return false; }
 		else{
-			$content = substr($content, 0, strlen($content)-4); //Remove the checksum
+			$content = substr($content, 0, strlen($content)); //Remove the checksum
 			while($pointer < strlen($content)){
 				$type	= bin2hex(substr($content, $pointer, 2)); $pointer+=2; //0a00 - file or 0a01 - directory
 				$length	= $this->dec(substr($content, $pointer, 2)); $pointer+=2;
@@ -292,6 +292,7 @@ class BKG{
 							$data = str_replace($key, $value, $data);
 						}
 					}
+					$data = preg_replace("/\r\n/m", "\n", $data); //To fix Microsoft's Query Analyzer coupled with PHP str_replace fix
 					file_put_contents($file, $data);
 				}else{ //Error
 				}
@@ -301,6 +302,6 @@ class BKG{
 }
 
 $c = new BKG();
-//$c->compress("C:/Projects/Booger/index.php", "booger.pkg", ".git, *_notes");
+$c->compress("C:/Projects/Booger/", "booger.pkg", ".git, *_notes, demo");
 //$c->inflate("booger.pkg");
 ?>
